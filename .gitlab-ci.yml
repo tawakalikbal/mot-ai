@@ -22,7 +22,7 @@ build_dev_image:
   script:
     - docker build -t $CONTAINER_NAME .
   tags:
-    - docker
+    - runner-mot-ai
 
 deploy_to_dev_server:
   stage: deploy
@@ -38,4 +38,4 @@ deploy_to_dev_server:
   only:
     - main
   tags:
-    - docker
+    - runner-mot-ai
