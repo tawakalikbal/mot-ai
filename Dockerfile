@@ -1,22 +1,24 @@
-# Dockerfile
+# Gunakan image Node.js ringan
 FROM node:18-alpine
 
-# Set workdir
+# Direktori kerja di dalam container
 WORKDIR /app
 
-# Install dependencies
+# Salin file package.json dan package-lock.json untuk install dependensi
 COPY package*.json ./
+
+# Install dependency
 RUN npm install
 
-# Copy source
+# Salin semua source code ke dalam container
 COPY . .
 
-# Build Next.js app
+# Jalankan build Next.js
 RUN npm run build
 
-# Set env and expose
+# Atur environment production dan port
 ENV NODE_ENV=production
 EXPOSE 3000
 
-# Start the app
+# Jalankan aplikasi
 CMD ["npm", "start"]
