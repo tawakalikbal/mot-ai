@@ -1,0 +1,58 @@
+export const destinations = [
+  {
+    id: 1,
+    title: 'Jawa',
+    imageUrl: '/images/destinations/candi-borobudur.jpg',
+    destinationUrl: '/destination/jawa',
+    alt: 'Candi Borobudur is the best destination place in East Java',
+  },
+  {
+    id: 2,
+    title: 'Bali',
+    imageUrl: '/images/destinations/bali.avif',
+    destinationUrl: '/destination/bali',
+    alt: 'Beautiful temples and beaches in Bali',
+  },
+  {
+    id: 3,
+    title: 'Nusa Tenggara',
+    imageUrl: '/images/destinations/nusa-tenggara.avif',
+    destinationUrl: '/destination/nusa-tenggara',
+    alt: 'Stunning landscapes and Komodo dragons in Nusa Tenggara',
+  },
+  {
+    id: 4,
+    title: 'Maluku',
+    imageUrl: '/images/destinations/maluku.avif',
+    destinationUrl: '/destination/maluku',
+    alt: 'Spice islands and pristine beaches in Maluku',
+  },
+  {
+    id: 5,
+    title: 'Kalimantan',
+    imageUrl: '/images/destinations/kalimantan.avif',
+    destinationUrl: '/destination/kalimantan',
+    alt: 'Orangutan habitat and rainforest adventures in Kalimantan',
+  },
+  {
+    id: 6,
+    title: 'Sulawesi',
+    imageUrl: '/images/destinations/sulawesi.jpg',
+    destinationUrl: '/destination/sulawesi',
+    alt: 'Unique culture and marine biodiversity in Sulawesi',
+  },
+  {
+    id: 7,
+    title: 'Sumatra',
+    imageUrl: '/images/destinations/sumatra.jpg',
+    destinationUrl: '/destination/sumatra',
+    alt: 'Lake Toba and Sumatran tigers in Sumatra',
+  },
+  {
+    id: 8,
+    title: 'Papua',
+    imageUrl: '/images/destinations/papua.jpg',
+    destinationUrl: '/destination/papua',
+    alt: 'Raja Ampat marine paradise and unique culture in Papua',
+  },
+]
