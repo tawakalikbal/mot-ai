@@ -1,0 +1,30 @@
+{
+  // Format on save
+  "editor.formatOnSave": true,
+
+  // Specify the default formatter (Prettier)
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Organize imports on save
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+    "source.fixAll": true
+  },
+
+  // Tab width
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+
+  // Optional: ESLint auto-fix
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "eslint.run": "onType",
+
+  // Optional: Prettier rules (override if needed)
+  "prettier.singleQuote": true,
+  "prettier.semi": false,
+  "prettier.trailingComma": "es5",
+  "prettier.jsxSingleQuote": true,
+  "prettier.printWidth": 100
+}
