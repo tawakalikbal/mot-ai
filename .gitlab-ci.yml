@@ -16,14 +16,18 @@ cache:
 
 install_dependencies:
   stage: install
-  image: node:current
   script:
+    - export NVM_DIR="$HOME/.nvm"
+    - export PATH="$NVM_DIR/versions/node/v24.4.0/bin:$PATH"
+    - node -v
+    - npm -v
     - npm ci
 
 build_app:
   stage: build
-  image: node:current
   script:
+    - export NVM_DIR="$HOME/.nvm"
+    - export PATH="$NVM_DIR/versions/node/v24.4.0/bin:$PATH"
     - npm run build
   artifacts:
     paths:
@@ -33,7 +37,6 @@ build_app:
 
 deploy_to_server:
   stage: deploy
-  image: node:current
   before_script:
     - 'which ssh-agent || ( yum install -y openssh-clients )'
     - eval $(ssh-agent -s)
