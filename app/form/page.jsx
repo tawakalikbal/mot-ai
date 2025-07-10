@@ -1,5 +1,5 @@
+import FormPage from "@/components/form/FormPage";
+
 export default function index() {
-  return (
-    <div>form page</div>
-  )
+  return <FormPage />;
 }
