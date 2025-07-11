@@ -19,8 +19,13 @@ const Landing = () => {
 
   return (
     <div>
-      <section className='w-full bg-[url("/images/hero-dark.webp")] bg-center bg-cover bg-no-repeat'>
-        <div className='mx-auto container px-4 md:px-0 flex items-center justify-center h-[400px]'>
+      <section className='w-full bg-center bg-cover bg-no-repeat relative aspect-[1/1] lg:aspect-[16/4]'>
+        <div className='w-full absolute top-0 aspect-[1/1] lg:aspect-[16/4]'>
+          <video autoPlay muted className='w-full h-full object-cover'>
+            <source src="/video/mot-opening-video.mp4" type="video/mp4"></source>
+          </video>
+        </div>
+        <div className='w-full px-4 md:px-0 flex items-center justify-center aspect-[1/1] lg:aspect-[16/4] absolute top-0'>
           <motion.div
             className='flex flex-col gap-8'
             initial={{ opacity: 0 }}
@@ -28,10 +33,9 @@ const Landing = () => {
             transition={{ duration: 2, ease: 'easeOut' }}
           >
             <div className='flex flex-col gap-2 text-center'>
-              <h1 className='text-4xl text-white font-bold'>Where do you want to go?</h1>
+              <h1 className='text-4xl text-white font-bold'>Where’s your next adventure?</h1>
               <h2 className='text-base text-gray-100'>
-                Enter your destination and get a custom itinerary recommendation tailored to your
-                needs.
+                Tell us where you're going, and we’ll build the perfect travel plan just for you.
               </h2>
             </div>
             <SearchAI
@@ -42,7 +46,7 @@ const Landing = () => {
           </motion.div>
         </div>
       </section>
-      <section className='container px-4 md:px-0 mx-auto flex flex-col gap-6 py-10'>
+      <section className='container px-4 mx-auto flex flex-col gap-6 py-10'>
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -52,7 +56,7 @@ const Landing = () => {
           Or get started with most popular destinations
         </motion.h2>
 
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 lg:gap-6'>
           {destinations?.map((item, index) => (
             <ThumbnailCard
               key={item.id}

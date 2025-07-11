@@ -10,7 +10,7 @@ const SearchAI = ({ handleClick, value, handleChange }) => {
       />
       <button
         onClick={handleClick}
-        className='rounded-md bg-gradient-to-r from-cyan-400 to-green-500 px-4 py-2 text-white text-base flex gap-1 items-center cursor-pointer'
+        className='rounded-md bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 px-4 py-2 text-white text-base flex gap-1 items-center cursor-pointer'
       >
         <svg
           xmlns='http://www.w3.org/2000/svg'

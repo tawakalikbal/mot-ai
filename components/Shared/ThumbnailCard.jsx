@@ -9,7 +9,7 @@ const ThumbnailCard = ({ title, imageUrl, destinationUrl, alt, index }) => {
     <MotionLink
       href={destinationUrl}
       target='_blank'
-      className='h-[200px] relative p-4 rounded-lg shadow-md bg-white cursor-pointer overflow-hidden group'
+      className='aspect-video relative p-4 rounded-lg shadow-md bg-white cursor-pointer overflow-hidden group'
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.2 }}
