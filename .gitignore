@@ -42,3 +42,5 @@ jest-test-results.json
 
 # TypeScript
 *.tsbuildinfo
+
+.env
