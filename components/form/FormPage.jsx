@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { CurrencyInput } from "../shared/CurrencyInput";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent } from "../ui/card";
 import { AddInterest } from "./AddInterest";
