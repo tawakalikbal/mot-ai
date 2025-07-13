@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
 
-export default nextConfig;
+const allowedUrls = ['plus.unsplash.com', 'images.unsplash.com']
+
+const nextConfig = {
+  images: {
+    remotePatterns: allowedUrls?.map((url) => ({
+      protocol: 'https',
+      hostname: url,
+    })),
+  },
+}
+
+export default nextConfig
