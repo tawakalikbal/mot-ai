@@ -8,13 +8,17 @@ import SearchAI from '@/components/Shared/SearchAI'
 import ThumbnailCard from '@/components/Shared/ThumbnailCard'
 import { destinations } from '@/data/destinations'
 
+import FormPage from '@/components/form/FormPage'
+
 const Landing = () => {
   const [searchValue, handleSearch] = useState('')
+  const [formActive, setformActive] = useState(false)
   const router = useRouter()
 
   const handleDiscoverAI = () => {
-    if (!searchValue) return
-    router.push(`/discover-ai?destination=${encodeURIComponent(searchValue)}`)
+    setformActive(true);
+    // if (!searchValue) return
+    // router.push(`/discover-ai?destination=${encodeURIComponent(searchValue)}`)
   }
 
   return (
@@ -68,6 +72,9 @@ const Landing = () => {
             />
           ))}
         </div>
+      </section>
+      <section className={`fixed lg:fixed z-50 top-0 right-0 bottom-0 left-0 bg-black/75 ${formActive ? '' : 'hidden'}`}>
+        <FormPage handleCloseFormModal={() => setformActive(false)} />
       </section>
     </div>
   )

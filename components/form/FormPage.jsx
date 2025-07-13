@@ -1,8 +1,4 @@
 "use client";
-import React, { useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,19 +8,31 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { CurrencyInput } from "../shared/CurrencyInput";
-import { Card, CardContent } from "../ui/card";
-import { CalendarIcon, Heart, Plus, User, Users } from "lucide-react";
-import { AddInterest } from "./AddInterest";
-import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { hitApiItinerary } from "@/utils/apiUtils";
+import { getOrCreateSessionId, getOrCreateUserId } from "@/utils/session";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, Heart, Plus, User, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Calendar } from "../ui/calendar";
+import { Card, CardContent } from "../ui/card";
+import { AddInterest } from "./AddInterest";
 
 const dataTraveling = [
   {
@@ -66,7 +74,7 @@ const Badge = ({ text, onClick, isActive }) => {
     <div
       onClick={onClick}
       className={`border ${
-        isActive && "bg-gradient-to-r from-[#26D0CE] to-green-300 text-white"
+        isActive && "bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white"
       } rounded-full py-2.5 px-4 cursor-pointer active:scale-95  transition-all flex items-center justify-center text-sm w-max`}
     >
       {text}
@@ -75,6 +83,12 @@ const Badge = ({ text, onClick, isActive }) => {
 };
 
 const formSchema = z.object({
+  destination: z
+    .string(1, { message: "Destination is required" })
+    .min(1, { message: "Destination is required" })
+    .refine((val) => val, {
+      message: "Destination is required",
+    }),
   budget: z
     .number({ invalid_type_error: "Budget must be a number" })
     .min(1, { message: "Budget must be more than 0" })
@@ -102,7 +116,7 @@ const formSchema = z.object({
     }),
 });
 
-const FormPage = () => {
+const FormPage = ({handleCloseFormModal}) => {
   const [dialog, setDialog] = useState({
     addInterest: false,
   });
@@ -112,7 +126,7 @@ const FormPage = () => {
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      destination: "",
       budget: null,
       plan: "",
       interested: [],
@@ -123,12 +137,69 @@ const FormPage = () => {
       },
     },
   });
-  const onSubmit = () => {};
+  const router = useRouter()
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const status = await hitApiItinerary(
+        uid,
+        sid,
+        data.destination,
+        data.budget,
+        data.plan,
+        data.interested,
+        data.food,
+        data.date.from,
+        data.date.to
+      );
+      if (status == 200) {
+        router.push('/itinerary')
+      }
+    } catch (err) {
+      console.error("Gagal kirim data");
+      setLoading(false);
+    }
+  };
+  const destination = [
+    { label: "Bali", value: "Bali" },
+    { label: "Yogyakarta", value: "Yogyakarta" },
+    { label: "Lombok", value: "Lombok" },
+    { label: "Labuan Bajo", value: "Labuan Bajo" },
+    { label: "Raja Ampat", value: "Raja Ampat" },
+    { label: "Bandung", value: "Bandung" },
+    { label: "Jakarta", value: "Jakarta" },
+    { label: "Malang", value: "Malang" },
+    { label: "Bromo", value: "Bromo" },
+    { label: "Toba Lake", value: "Toba Lake" },
+    { label: "Belitung", value: "Belitung" },
+    { label: "Derawan Islands", value: "Derawan Islands" },
+    { label: "Wakatobi", value: "Wakatobi" },
+    { label: "Makassar", value: "Makassar" },
+    { label: "Manado", value: "Manado" },
+    { label: "Tana Toraja", value: "Tana Toraja" },
+    { label: "Semarang", value: "Semarang" },
+    { label: "Medan", value: "Medan" },
+    { label: "Padang", value: "Padang" },
+    { label: "Aceh", value: "Aceh" }
+  ];
 
-  console.log({ value: form.watch(), errors });
+  const [uid, setUid] = useState(null)
+  const [sid, setSid] = useState(null)
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const userId = getOrCreateUserId();
+    const sessionId = getOrCreateSessionId();
+    setUid(userId);
+    setSid(sessionId);
+  }, []);
+
+  // console.log({ value: form.watch(), errors });
 
   return (
-    <div className="mx-[100px] xl:mx-[300px] my-[80px] font-medium">
+    <>
+    <div className="max-w-[768px] mx-auto lg:my-[20px] h-[100vh] lg:h-[95vh] font-medium bg-white p-10 rounded-xl relative overflow-scroll">
+      <div onClick={handleCloseFormModal} className="cursor-pointer absolute top-5 right-5 text-base w-7 h-7 border border-black rounded-full flex items-center justify-center">X</div>
       <div className="space-y-3">
         <h3 className="font-bold text-5xl">Enter you travel details</h3>
         <p className="text-neutral-500 text-lg font-normal">
@@ -190,19 +261,48 @@ const FormPage = () => {
             />
             <FormField
               control={form.control}
+              name="destination"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Destination</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {destination.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="budget"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>What is your total budget?</FormLabel>
                   <FormControl>
-                    {/* <Input placeholder="shadcn" {...field} /> */}
-                    <CurrencyInput
-                      value={field.value}
-                      onChange={field.onChange}
+                    <input
+                      type="number"
                       placeholder="Input your estimated budget?"
+                      {...field}
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const parsed = value === "" ? null : Number(value);
+                        field.onChange(parsed);
+                      }}
+                      className="border border-gray-300 rounded-md px-3 py-2 w-full"
                     />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -225,7 +325,7 @@ const FormPage = () => {
                             }}
                             className={`p-1.5 ${
                               field.value == val.label &&
-                              "bg-gradient-to-r from-[#26D0CE] to-green-300 text-white"
+                              "bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white"
                             } cursor-pointer rounded-md active:scale-95 transition-all`}
                             key={key}
                           >
@@ -319,7 +419,7 @@ const FormPage = () => {
               )}
             />
             <div className="flex justify-end">
-              <Button size={"lg"} type="submit">
+              <Button size={"lg"} variant={"formsubmit"} type="submit">
                 Submit answer
               </Button>
             </div>
@@ -337,6 +437,10 @@ const FormPage = () => {
         }}
       />
     </div>
+    <div className={`fixed top-0 right-0 bottom-0 left-0 bg-black/75 flex items-center justify-center ${loading ? '' : 'hidden'}`}>
+        <span className="loading loading-spinner loading-xl text-white"></span>
+    </div>
+    </>
   );
 };
 
