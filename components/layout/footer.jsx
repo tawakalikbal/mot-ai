@@ -1,10 +1,9 @@
 "use client";
-import React from "react";
 
 const Footer = () => {
   return (
     <footer className="flex bg-black text-white py-4 md:h-42 ">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-6 ">
+      <div className="container mx-auto px-4 md:px-0 flex flex-col md:flex-row justify-between items-center">
         <div className="flex justify-center md:justify-start">
           <div
             className="flex w-40 h-auto items-center 
