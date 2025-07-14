@@ -8,7 +8,7 @@ const DraggableCard = ({ event, number }) => {
         <GripVertical className='text-gray-500 size-5 shrink-0 cursor-grab' />
         <div className='relative w-full sm:w-[150px] h-[150px] rounded-lg shadow-md shrink-1 sm:shrink-0'>
           <Image
-            src={event?.location?.image_url}
+            src="https://images.unsplash.com/photo-1560707303-4e980ce876ad?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c291cmNlfGVufDB8fDB8fHww"
             alt='Bali such a beautiful place'
             className='rounded-lg object-cover'
             sizes='(max-width: 768px) 150px'

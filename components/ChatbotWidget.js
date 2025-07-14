@@ -1,19 +1,22 @@
 import { cn } from '@/lib/utils/cn'
+import { getOrCreateSessionId, getOrCreateUserId } from '@/utils/session'
 import { Send, X } from 'lucide-react'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+
+
 export const ChatbotWidget = forwardRef((props, ref) => {
   const [showChat, setShowChat] = useState(false)
   const handleWidgetClick = () => {
     setShowChat((prev) => !prev)
   }
   const chatBubblesRef = useRef(null)
+  const { onItineraryUpdate } = props;
 
   const [isLoading, setIsLoading] = useState(false)
-
   const [chatData, setChatData] = useState([
     {
       sender: 'bot',
-      message: "Hi, I'm AiYU, your travel assistant. How can i help you today?",
+      message: "Hi, I'm MaiA, your travel assistant. How can i help you today?",
     },
   ])
 
@@ -51,7 +54,7 @@ export const ChatbotWidget = forwardRef((props, ref) => {
   return (
     <>
       <div
-        className='size-10 bg-gradient-to-r from-[#02b9da] to-[#09d99d] rounded-full fixed bottom-10 right-10 cursor-pointer z-100'
+        className='size-10 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 rounded-full fixed bottom-10 right-10 cursor-pointer z-100'
         onClick={handleWidgetClick}
       />
 
@@ -70,8 +73,8 @@ export const ChatbotWidget = forwardRef((props, ref) => {
           )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className=' p-4 bg-gradient-to-r from-[#02b9da] to-[#09d99d] flex items-center justify-between'>
-            <p className='font-semibold text-white'>AiYU - Your AI Travel Assistant</p>
+          <div className=' p-4 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 flex items-center justify-between'>
+            <p className='font-semibold text-white'>MaiA - Your AI Travel Assistant</p>
             <X size={24} className='cursor-pointer' onClick={handleWidgetClick} />
           </div>
           <div className='flex flex-col overflow-auto py-8 px-4 flex-1 bg-[#fdfdfd] gap-4 custom-scrollbar'>
@@ -82,7 +85,7 @@ export const ChatbotWidget = forwardRef((props, ref) => {
             {isLoading && <p className='text-gray-500 px-5 animate-pulse'>Typing...</p>}
             <div ref={chatBubblesRef}></div>
           </div>
-          <ChatInput setData={setChatData} setIsLoading={setIsLoading} />
+          <ChatInput setData={setChatData} setIsLoading={setIsLoading} onItineraryUpdate={onItineraryUpdate} />
         </section>
       </div>
     </>
@@ -98,9 +101,9 @@ const ChatBubble = ({ sender = 'bot', message }) => {
     >
       {sender === 'bot' && (
         <>
-          <div className='size-10 bg-gradient-to-r shrink-0 from-[#02b9da] to-[#09d99d] rounded-full' />
+          <div className='size-10 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 shrink-0 rounded-full' />
           <div className='flex flex-col text-black'>
-            <p className='font-semibold '>AiYu</p>
+            <p className='font-semibold '>MaiA</p>
 
             <div className='bg-[#f1f5fa] px-5 py-5 rounded-xl rounded-tl-none whitespace-pre-wrap'>
               <p>{message}</p>
@@ -122,7 +125,7 @@ const ChatBubble = ({ sender = 'bot', message }) => {
   )
 }
 
-const ChatInput = ({ setData, setIsLoading }) => {
+const ChatInput = ({ setData, setIsLoading, onItineraryUpdate }) => {
   const [input, setInput] = useState('')
   const timeoutRef = useRef(null)
 
@@ -130,32 +133,150 @@ const ChatInput = ({ setData, setIsLoading }) => {
     setInput(e.target.value)
   }
 
-  const onHandleSubmit = (e) => {
+  const onHandleSubmit = async (e) => {
+    const userId = getOrCreateUserId();
+    const sessionId = getOrCreateSessionId();
+
     const { key } = e
-    if (key == 'Enter' || e.target.name == 'send') {
+    if (key === 'Enter' || e.target?.name === 'send') {
+      if (!input.trim()) return // prevent empty input
+
+      const userMessage = input.trim()
       setInput('')
       setIsLoading(true)
+
+      // Append user message
       setData((prev) => [
         ...prev,
         {
           sender: 'user',
-          message: input,
+          message: userMessage,
         },
       ])
 
-      if (timeoutRef.current) return
-      timeoutRef.current = setTimeout(() => {
-        setIsLoading(false)
-        setData((prev) => [
-          ...prev,
-          {
-            sender: 'bot',
-            message:
-              'Hi there! 👋 \nThank you for reaching out.\n\nUnfortunately, our chatbot is currently undergoing maintenance. We appreciate your patience, talk to you soon!',
+      const apiChatbot = async () => {
+        try {
+          const res = await sendText(userId, sessionId, userMessage)
+
+          // Example: get bot reply from response
+          const botMessage = res || 'Sorry, I didn’t understand that.'
+
+          setData((prev) => [
+            ...prev,
+            {
+              sender: 'bot',
+              message: botMessage,
+            },
+          ])
+        } catch (err) {
+          console.error("Gagal ambil data", err)
+          setData((prev) => [
+            ...prev,
+            {
+              sender: 'bot',
+              message: 'Oops! Something went wrong.',
+            },
+          ])
+        } finally {
+          setIsLoading(false)
+        }
+      }
+
+      apiChatbot()
+    }
+  }
+
+  let sampleItinerary = {
+    days: [],
+    end_date: "",
+    start_date: "",
+    trip_image_url: "",
+    trip_name: ""
+  }
+
+  async function sendText(userId, sessionId, text) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2 * 60 * 1000); // 2 menit timeout
+
+    try {
+      const res = await fetch("https://mot-maia-engine-v2-928113580262.asia-southeast2.run.app/run_sse", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          "appName": "maia",
+          "userId": userId,
+          "sessionId": sessionId,
+          "newMessage": {
+            "parts": [
+              {
+                "thought": false,
+                "text": text
+              }
+            ],
+            "role": "user"
           },
-        ])
-        timeoutRef.current = null // Reset after execution
-      }, 2000)
+          "streaming": false
+        }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith("data:")) {
+            const jsonString = line.slice(5).trim();
+            if (jsonString === "[DONE]") break;
+
+            try {
+              const parsed = JSON.parse(jsonString);
+              const isText = parsed.content.parts[0].text;
+              const isFunctionResponse = parsed.content.parts[0].functionResponse;
+              if (isText) {
+                console.log("istext", isText)
+                setData((prev) => [
+                  ...prev,
+                  {
+                    sender: 'bot',
+                    message: isText,
+                  },
+                ])
+              }
+              if (isFunctionResponse) {
+                const keysToCheck = Object.keys(sampleItinerary);
+                const isMatch = keysToCheck.every(key => key in isFunctionResponse.response);
+                if (isMatch) {
+                   onItineraryUpdate(isFunctionResponse.response)
+                }
+              }
+              // console.log(parsed.content.parts[0])
+              // return parsed.content.parts[0].text;3
+            } catch (e) {
+              console.log("Gagal parse JSON SSE:", e, jsonString);
+            }
+          }
+        }
+      }
+
+    } catch (error) {
+      clearTimeout(timeout);
+      console.error("Fetch failed:", error);
+      throw error;
     }
   }
 

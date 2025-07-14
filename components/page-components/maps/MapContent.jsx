@@ -50,11 +50,11 @@ export const MapContent = ({ selectedPlace, chatbotRef, onEnter, setSelectedPlac
           className='bg-black text-white w-full rounded-full px-2 py-3 cursor-pointer flex items-center justify-center font-semibold gap-2'
           onClick={() =>
             chatbotRef.current.sendChat(
-              `Hi AiYu! Can you tell me more about ${selectedPlace.name}?`
+              `Hi MaiA! Can you tell me more about ${selectedPlace.name}?`
             )
           }
         >
-          Ask AiYu
+          Ask MaiA
           <StarsIcon size={20} />
         </button>
       </section>

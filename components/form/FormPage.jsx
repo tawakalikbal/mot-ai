@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { hitApiItinerary } from "@/utils/apiUtils";
+import { fetchItinerarySSE, hitApiItinerary } from "@/utils/apiUtils";
 import { getOrCreateSessionId, getOrCreateUserId } from "@/utils/session";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -30,7 +30,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CurrencyInput } from "../shared/CurrencyInput";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent } from "../ui/card";
 import { AddInterest } from "./AddInterest";
@@ -154,13 +153,31 @@ const FormPage = ({handleCloseFormModal}) => {
         data.date.to
       );
       if (status == 200) {
-        router.push('/itinerary')
+        const statusItinerary = await buatItinerary();
+        if (statusItinerary) {
+          router.push('/itinerary')
+        }
       }
     } catch (err) {
       console.error("Gagal kirim data");
       setLoading(false);
     }
   };
+
+  const buatItinerary = async (data) => {
+    setLoading(true);
+    try {
+      const resdata = await fetchItinerarySSE(
+        uid,
+        sid,
+      );
+      return resdata;
+    } catch (err) {
+      console.error("Gagal kirim data");
+      setLoading(false);
+    }
+  };
+  
   const destination = [
     { label: "Bali", value: "Bali" },
     { label: "Yogyakarta", value: "Yogyakarta" },

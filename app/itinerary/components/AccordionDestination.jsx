@@ -7,14 +7,29 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-import { format, parseISO } from 'date-fns'
+import { format, isValid, parseISO } from 'date-fns'
 import { ChevronDownIcon, Plus } from 'lucide-react'
 import { useState } from 'react'
 import DraggableCard from './DraggableCard'
 
-const AccordionDestination = ({ itineraryList = [] }) => {
+const AccordionDestination = ({ itineraryList = [], chatbotRef }) => {
   const [openItem, setOpenItem] = useState('')
-  const dateFormatted = (value) => format(parseISO(value), 'EEEE, MMM dd')
+  const dateFormatted = (value) => {
+    if (!value) return ''
+    const parsed = parseISO(value)
+    if (!isValid(parsed)) return ''
+    return format(parsed, 'EEEE, MMM dd')
+  }
+
+  const handleOpenChat = () => {
+    chatbotRef?.current?.openChat()
+  }
+
+  const handleClickDestination = (e) => {
+    const day = e.currentTarget.getAttribute("day");
+    chatbotRef.current.sendChat(`Hi MaiA!`)
+    console.log(day)
+  }
 
   return (
     <Accordion
@@ -46,6 +61,8 @@ const AccordionDestination = ({ itineraryList = [] }) => {
               <Button
                 variant='outline'
                 className='text-blue-500 border-blue-500 hover:text-blue-500'
+                day = {index + 1}
+                onClick={handleClickDestination}
               >
                 <Plus className='size-4 mr-2' />
                 Add Destination
